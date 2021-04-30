@@ -37,5 +37,42 @@ namespace Books
         {
             return _context.Books.ToList();
         }
+
+        public Book GetBookById(int id)
+        {
+            var book = _context.Books.FirstOrDefault(b => b.Id == id);
+            if (book != null)
+                return book;
+            return null;
+        }
+
+        public void DeleteBookbyId(int id)
+        {
+            var book = GetBookById(id);
+
+            if (book != null)
+            {
+                _context.Books.Remove(book);
+                _context.SaveChanges();
+            }
+        }
+
+        public Book UpdateBookById(int id, BookVM book)
+        {
+            var _book = _context.Books.FirstOrDefault(b => b.Id == id);
+            if(book != null)
+            {
+                _book.Title = book.Title;
+                _book.Description = book.Description;
+                _book.IsRead = book.IsRead;
+                _book.Rate = book.IsRead ? book.Rate : null;
+                _book.DateRead = book.IsRead ? book.DateRead : null;
+                _book.Genre = book.Genre;
+                _book.CoverUrl = book.CoverUrl;
+            _context.SaveChanges();
+            }
+            return _book;
+        }
+
     }
 }
