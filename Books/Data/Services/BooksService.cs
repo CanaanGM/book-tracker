@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Books.Data;
 using Books.Data.Models;
+using Books.Data.ViewModels;
 
 namespace Books
 {
@@ -15,7 +16,7 @@ namespace Books
 
         }
 
-        public void AddBook (BookVM book)
+        public void AddBookWithAuthors (BookVM book)
         {
             var _book = new Book()
             {
@@ -26,11 +27,23 @@ namespace Books
                 DateRead = book.IsRead? book.DateRead : null,
                 Genre = book.Genre,
                 CoverUrl = book.CoverUrl,
-                DateAdded = DateTime.Now
+                DateAdded = DateTime.Now,
+                PublisherId = book.PublisherId,
             };
 
             _context.Books.Add(_book);
             _context.SaveChanges();
+
+            foreach(var id in book.AuthorIds)
+            {
+                var _book_author = new Book_Author()
+                {
+                    BookId = _book.Id,
+                    AuthorId = id
+                };
+                _context.Books_Authors.Add(_book_author);
+                _context.SaveChanges();
+            }
         }
 
         public List<Book> GetAll()
@@ -38,12 +51,22 @@ namespace Books
             return _context.Books.ToList();
         }
 
-        public Book GetBookById(int id)
+        public BookWithAuthorsVM GetBookById(int id)
         {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
-            if (book != null)
-                return book;
-            return null;
+            var _bookWithAuthors = _context.Books.Where(n => n.Id == id).Select(book => new BookWithAuthorsVM() {
+                Title = book.Title,
+                Description = book.Description,
+                IsRead = book.IsRead,
+                Rate = book.IsRead ? book.Rate : null,
+                DateRead = book.IsRead ? book.DateRead : null,
+                Genre = book.Genre,
+                CoverUrl = book.CoverUrl,
+                PublisherName = book.Publisher.Name,
+                AuthorNames = book.Book_Authors.Select(n => n.Author.FullName).ToList()
+
+            }).FirstOrDefault();
+
+            return _bookWithAuthors;
         }
 
         public void DeleteBookbyId(int id)
@@ -52,7 +75,7 @@ namespace Books
 
             if (book != null)
             {
-                _context.Books.Remove(book);
+                //_context.Books.Remove(book);
                 _context.SaveChanges();
             }
         }

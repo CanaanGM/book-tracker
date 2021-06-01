@@ -1,4 +1,4 @@
-using Books.Data.Models;
+using Books.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace Books
         [Route("addBook")]
         public IActionResult AddBook([FromBody] BookVM book)
         {
-            _booksService.AddBook(book);
+            _booksService.AddBookWithAuthors(book);
             return Ok();
         }
 
