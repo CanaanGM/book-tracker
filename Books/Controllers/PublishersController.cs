@@ -37,7 +37,6 @@ namespace Books.Controllers
         [Route("getAll")]
         public IActionResult GetAllPublishers(string sortBy, string searchString, int pageNumber)
         {
-            throw new Exception("Thrown from get all but why isn't it loggin the errors ????");
             try
             {
                 _logger.LogInformation("Heloo Fileee!");
